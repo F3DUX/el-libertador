@@ -151,13 +151,31 @@ export default function GamePage() {
 
     // Store current coords in visited waypoints for the accumulative Leaflet route
     const currentEvt = GAME_EVENTS[gameState.currentEventId];
-    if (currentEvt) {
-      const prevCoords = currentEvt.mapCoords;
-      setVisitedWaypoints(prev => {
-        const last = prev[prev.length - 1];
-        if (last && last.lat === prevCoords.lat && last.lng === prevCoords.lng) return prev;
-        return [...prev, { lat: prevCoords.lat, lng: prevCoords.lng }];
-      });
+  if (currentEvt) {
+  const prevCoords = currentEvt.mapCoords;
+
+  if (prevCoords.lat !== undefined && prevCoords.lng !== undefined) {
+    setVisitedWaypoints(prev => {
+      const last = prev[prev.length - 1];
+
+      if (
+        last &&
+        last.lat === prevCoords.lat &&
+        last.lng === prevCoords.lng
+      ) {
+        return prev;
+      }
+
+      return [
+        ...prev,
+        {
+          lat: prevCoords.lat,
+          lng: prevCoords.lng,
+        },
+      ];
+    });
+  }
+}
     }
 
     setGameState(prev => ({
