@@ -44,8 +44,10 @@ export interface DecisionOption {
 }
 
 export interface MapCoordinates {
-  lat: number; // Latitude (real geographic coordinate)
-  lng: number; // Longitude (real geographic coordinate)
+  x: number;
+  y: number;
+  lat?: number;
+  lng?: number;
 }
 
 export interface GameEvent {
