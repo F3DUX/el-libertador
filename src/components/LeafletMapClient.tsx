@@ -74,16 +74,26 @@ const LeafletMap = dynamic(
   }
 );
 
-export const LeafletMapClient: React.FC<LeafletMapClientProps> = ({
+export function LeafletMapClient({
   location,
   coords,
   visitedWaypoints,
-}) => {
+}: LeafletMapClientProps) {
+  const safeVisitedWaypoints = visitedWaypoints
+    .filter((wp) => wp.lat !== undefined && wp.lng !== undefined)
+    .map((wp) => ({
+      lat: wp.lat!,
+      lng: wp.lng!,
+    }));
+
   return (
     <LeafletMap
       location={location}
-      coords={coords}
-      visitedWaypoints={visitedWaypoints}
+      coords={{
+        lat: coords.lat ?? -34.6037,
+        lng: coords.lng ?? -58.3816,
+      }}
+      visitedWaypoints={safeVisitedWaypoints}
     />
   );
-};
+}

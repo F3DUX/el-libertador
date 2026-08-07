@@ -44,10 +44,10 @@ export interface DecisionOption {
 }
 
 export interface MapCoordinates {
-  x: number;
-  y: number;
-  lat?: number;
-  lng?: number;
+  lat: number;
+  lng: number;
+  x?: number;
+  y?: number;
 }
 
 export interface GameEvent {

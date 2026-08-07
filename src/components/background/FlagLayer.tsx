@@ -119,8 +119,10 @@ export function FlagLayer({ region }: FlagLayerProps) {
       }
     }
 
-    function drawFlag(ctx: CanvasRenderingContext2D) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function drawFlag(context: CanvasRenderingContext2D) {
+      if (!canvas) return;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw flag cloth quad-by-quad
       for (let r = 0; r < ROWS - 1; r++) {
@@ -148,50 +150,50 @@ export function FlagLayer({ region }: FlagLayerProps) {
           const nz = ex * fy - ey * fx; // z component of normal
           const light = 0.6 + Math.max(0, nz / (FLAG_W * CELL_H * 0.4)) * 0.4;
 
-          ctx.beginPath();
-          ctx.moveTo(tl.x, tl.y);
-          ctx.lineTo(tr.x, tr.y);
-          ctx.lineTo(br.x, br.y);
-          ctx.lineTo(bl.x, bl.y);
-          ctx.closePath();
+          context.beginPath();
+          context.moveTo(tl.x, tl.y);
+          context.lineTo(tr.x, tr.y);
+          context.lineTo(br.x, br.y);
+          context.lineTo(bl.x, bl.y);
+          context.closePath();
 
           // Apply lighting tint
-          ctx.fillStyle = color;
-          ctx.globalAlpha = Math.max(0.6, Math.min(1, light));
-          ctx.fill();
+          context.fillStyle = color;
+          context.globalAlpha = Math.max(0.6, Math.min(1, light));
+          context.fill();
         }
       }
-      ctx.globalAlpha = 1;
+      context.globalAlpha = 1;
 
       // Draw Sol de Mayo on center of white stripe
       const midRow = Math.floor(ROWS / 2);
       const midCol = Math.floor(COLS / 2);
       const cp = points[midRow * COLS + midCol];
       if (cp) {
-        drawSolDeMayo(ctx, cp.x, cp.y, 10);
+        drawSolDeMayo(context, cp.x, cp.y, 10);
       }
 
       // Flagpole / mast
       const topPin = points[0];
       const botPin = points[(ROWS - 1) * COLS];
-      ctx.beginPath();
-      ctx.moveTo(topPin.x - 3, topPin.y - 5);
-      ctx.lineTo(botPin.x - 3, botPin.y + 5);
-      ctx.strokeStyle = '#8b6914';
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      ctx.stroke();
+      context.beginPath();
+      context.moveTo(topPin.x - 3, topPin.y - 5);
+      context.lineTo(botPin.x - 3, botPin.y + 5);
+      context.strokeStyle = '#8b6914';
+      context.lineWidth = 4;
+      context.lineCap = 'round';
+      context.stroke();
     }
 
-    function drawSolDeMayo(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
-      ctx.save();
-      ctx.globalAlpha = 0.85;
+    function drawSolDeMayo(context: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+      context.save();
+      context.globalAlpha = 0.85;
 
       // Face
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = '#F5C518';
-      ctx.fill();
+      context.beginPath();
+      context.arc(cx, cy, r, 0, Math.PI * 2);
+      context.fillStyle = '#F5C518';
+      context.fill();
 
       // Rays
       const rayCount = 16;
@@ -200,31 +202,32 @@ export function FlagLayer({ region }: FlagLayerProps) {
         const isLong = i % 2 === 0;
         const r1 = r + 1.5;
         const r2 = r + (isLong ? 5 : 3.5);
-        ctx.beginPath();
-        ctx.moveTo(cx + r1 * Math.cos(angle), cy + r1 * Math.sin(angle));
-        ctx.lineTo(cx + r2 * Math.cos(angle), cy + r2 * Math.sin(angle));
-        ctx.strokeStyle = '#D4AF37';
-        ctx.lineWidth = isLong ? 1.2 : 0.8;
-        ctx.stroke();
+        context.beginPath();
+        context.moveTo(cx + r1 * Math.cos(angle), cy + r1 * Math.sin(angle));
+        context.lineTo(cx + r2 * Math.cos(angle), cy + r2 * Math.sin(angle));
+        context.strokeStyle = '#D4AF37';
+        context.lineWidth = isLong ? 1.2 : 0.8;
+        context.stroke();
       }
 
       // Simple face features
-      ctx.fillStyle = '#8b6914';
+      context.fillStyle = '#8b6914';
       // Eyes
-      ctx.beginPath(); ctx.arc(cx - 2.5, cy - 1.5, 0.8, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 2.5, cy - 1.5, 0.8, 0, Math.PI * 2); ctx.fill();
+      context.beginPath(); context.arc(cx - 2.5, cy - 1.5, 0.8, 0, Math.PI * 2); context.fill();
+      context.beginPath(); context.arc(cx + 2.5, cy - 1.5, 0.8, 0, Math.PI * 2); context.fill();
       // Smile
-      ctx.beginPath();
-      ctx.arc(cx, cy + 1, 3, 0.2, Math.PI - 0.2);
-      ctx.strokeStyle = '#8b6914';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
+      context.beginPath();
+      context.arc(cx, cy + 1, 3, 0.2, Math.PI - 0.2);
+      context.strokeStyle = '#8b6914';
+      context.lineWidth = 0.8;
+      context.stroke();
 
-      ctx.restore();
+      context.restore();
     }
 
     let lastTime = 0;
     function loop(time: number) {
+      if (!ctx) return;
       const dt = Math.min(time - lastTime, 32); // cap at 32ms
       lastTime = time;
       simulate(dt);

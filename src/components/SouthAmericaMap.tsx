@@ -24,21 +24,27 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
   coords,
   previousCoords,
 }) => {
+  // Safe fallbacks to prevent TypeScript 'possibly undefined' build errors
+  const currentX = coords.x ?? 0;
+  const currentY = coords.y ?? 0;
+  const prevX = previousCoords?.x ?? 0;
+  const prevY = previousCoords?.y ?? 0;
+
   // Known city pins (x,y in SVG viewBox units 0-280 × 0-220)
   const cities = [
-    { name: 'Yapeyú',          region: 'Corrientes',   x: 127, y: 118 },
-    { name: 'Buenos Aires',    region: 'Argentina',    x: 122, y: 137 },
-    { name: 'San Lorenzo',     region: 'Santa Fe',     x: 119, y: 127 },
-    { name: 'Mendoza',         region: 'Cuyo',         x: 98,  y: 134 },
-    { name: 'Santiago',        region: 'Chile',        x: 84,  y: 136 },
-    { name: 'Lima',            region: 'Perú',         x: 70,  y: 90  },
-    { name: 'Guayaquil',       region: 'Ecuador',      x: 62,  y: 72  },
-    { name: 'Potosí',          region: 'Bolivia',      x: 103, y: 105 },
-    { name: 'Asunción',        region: 'Paraguay',     x: 128, y: 110 },
-    { name: 'Montevideo',      region: 'Uruguay',      x: 130, y: 140 },
-    { name: 'Cádiz',           region: 'España',       x: 217, y: 60  },
-    { name: 'Madrid',          region: 'España',       x: 224, y: 52  },
-    { name: 'Boulogne-sur-Mer',region: 'Francia',      x: 237, y: 36  },
+    { name: 'Yapeyú',           region: 'Corrientes',   x: 127, y: 118 },
+    { name: 'Buenos Aires',     region: 'Argentina',    x: 122, y: 137 },
+    { name: 'San Lorenzo',      region: 'Santa Fe',     x: 119, y: 127 },
+    { name: 'Mendoza',          region: 'Cuyo',         x: 98,  y: 134 },
+    { name: 'Santiago',         region: 'Chile',        x: 84,  y: 136 },
+    { name: 'Lima',             region: 'Perú',         x: 70,  y: 90  },
+    { name: 'Guayaquil',        region: 'Ecuador',      x: 62,  y: 72  },
+    { name: 'Potosí',           region: 'Bolivia',      x: 103, y: 105 },
+    { name: 'Asunción',         region: 'Paraguay',     x: 128, y: 110 },
+    { name: 'Montevideo',       region: 'Uruguay',      x: 130, y: 140 },
+    { name: 'Cádiz',            region: 'España',       x: 217, y: 60  },
+    { name: 'Madrid',           region: 'España',       x: 224, y: 52  },
+    { name: 'Boulogne-sur-Mer', region: 'Francia',      x: 237, y: 36  },
   ];
 
   // Build travel path: the historical route of San Martín
@@ -68,7 +74,8 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
   }, '');
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden shadow-patrio border-2 border-celeste-patrio"
+    <div 
+      className="relative w-full rounded-2xl overflow-hidden shadow-patrio border-2 border-celeste-patrio"
       style={{ background: 'linear-gradient(160deg, #dbedf9 0%, #c8e3f5 40%, #b8d9f2 100%)' }}
     >
       {/* Map Legend */}
@@ -91,23 +98,23 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
         <defs>
           {/* Ocean gradient */}
           <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stopColor="#c0dff5" />
+            <stop offset="0%" stopColor="#c0dff5" />
             <stop offset="100%" stopColor="#a8d0ed" />
           </linearGradient>
           {/* Land gradient */}
           <linearGradient id="landGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%"   stopColor="#e8f4e8" />
+            <stop offset="0%" stopColor="#e8f4e8" />
             <stop offset="100%" stopColor="#d4eccc" />
           </linearGradient>
           {/* Andes gradient */}
           <linearGradient id="andesGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="#c8d8e8" />
+            <stop offset="0%" stopColor="#c8d8e8" />
             <stop offset="100%" stopColor="#b8c8d8" />
           </linearGradient>
           {/* Route gradient */}
           <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="#75AADB" />
-            <stop offset="50%"  stopColor="#D4AF37" />
+            <stop offset="0%" stopColor="#75AADB" />
+            <stop offset="50%" stopColor="#D4AF37" />
             <stop offset="100%" stopColor="#C0392B" />
           </linearGradient>
           {/* Glow filter */}
@@ -348,7 +355,7 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
         {/* Current travel segment — animated */}
         {previousCoords && (
           <motion.path
-            d={`M ${previousCoords.x} ${previousCoords.y} Q ${(previousCoords.x + coords.x) / 2} ${Math.min(previousCoords.y, coords.y) - 15} ${coords.x} ${coords.y}`}
+            d={`M ${prevX} ${prevY} Q ${(prevX + currentX) / 2} ${Math.min(prevY, currentY) - 15} ${currentX} ${currentY}`}
             fill="none"
             stroke="url(#routeGrad)"
             strokeWidth="2.5"
@@ -363,8 +370,8 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
 
         {/* ===================== CITY MARKERS ===================== */}
         {cities.map((city) => {
-          const distX = Math.abs(city.x - coords.x);
-          const distY = Math.abs(city.y - coords.y);
+          const distX = Math.abs(city.x - currentX);
+          const distY = Math.abs(city.y - currentY);
           const isCurrent = distX < 7 && distY < 7;
 
           return (
@@ -427,23 +434,23 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
         {/* ===================== ANIMATED TROOPER ===================== */}
         <motion.g
           initial={{
-            x: previousCoords ? previousCoords.x - coords.x : 0,
-            y: previousCoords ? previousCoords.y - coords.y : 0,
+            x: previousCoords ? prevX - currentX : 0,
+            y: previousCoords ? prevY - currentY : 0,
           }}
           animate={{ x: 0, y: 0 }}
           transition={{ duration: 2.0, ease: 'easeInOut' }}
-          style={{ transformOrigin: `${coords.x}px ${coords.y}px` }}
+          style={{ transformOrigin: 'center center' }}
         >
           {/* Horse + rider icon at current location */}
           <circle
-            cx={coords.x} cy={coords.y} r={5}
+            cx={currentX} cy={currentY} r={5}
             fill="#D4AF37"
             stroke="#1B365D"
             strokeWidth="1.2"
             filter="url(#markerGlow)"
           />
           <text
-            x={coords.x} y={coords.y + 2}
+            x={currentX} y={currentY + 2}
             fontSize="5" textAnchor="middle"
           >
             🐎
@@ -453,12 +460,12 @@ export const SouthAmericaMap: React.FC<SouthAmericaMapProps> = ({
         {/* Compass rose */}
         <g transform="translate(262, 190)">
           <circle cx="0" cy="0" r="10" fill="#1B365D" opacity="0.85" stroke="#D4AF37" strokeWidth="0.8"/>
-          <text x="0" y="-5"  fontSize="4" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel" fontWeight="bold">N</text>
-          <text x="0" y="7"   fontSize="3.5" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel">S</text>
+          <text x="0" y="-5" fontSize="4" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel" fontWeight="bold">N</text>
+          <text x="0" y="7" fontSize="3.5" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel">S</text>
           <text x="-6" y="1.5" fontSize="3.5" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel">O</text>
-          <text x="6"  y="1.5" fontSize="3.5" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel">E</text>
-          <line x1="0" y1="-8" x2="0" y2="8"  stroke="#D4AF37" strokeWidth="0.5" opacity="0.5"/>
-          <line x1="-8" y1="0" x2="8" y2="0"  stroke="#D4AF37" strokeWidth="0.5" opacity="0.5"/>
+          <text x="6" y="1.5" fontSize="3.5" fill="#D4AF37" textAnchor="middle" fontFamily="Cinzel">E</text>
+          <line x1="0" y1="-8" x2="0" y2="8" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5"/>
+          <line x1="-8" y1="0" x2="8" y2="0" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5"/>
         </g>
 
         {/* Scale bar */}
